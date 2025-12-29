@@ -1,7 +1,6 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const churrascoRoutes = require('./routes/churrascoRoutes');
+import express from 'express';
+import cors from 'cors';
+import churrascoRoutes from './routes/churrasco-routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;

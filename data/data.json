@@ -113,9 +113,9 @@
     },
     {
       "id": 13,
-      "nome": "Queijo Coalho",
+      "nome": "Queijo Coalho (espeto)",
       "qtdPorAdulto": 1.5,
-      "unidade": "espetos",
+      "unidade": "un",
       "ativo": true
     }
   ],

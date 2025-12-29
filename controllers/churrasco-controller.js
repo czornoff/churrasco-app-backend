@@ -1,11 +1,25 @@
-const fs = require('fs');
-const path = require('path');
-const DATA_PATH = process.env.DATA_PATH || './data.json';
-const lerDados = () => JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-exports.getOpcoes = (req, res) => res.json(lerDados());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-exports.salvarDados = (req, res) => {
+const DATA_PATH = process.env.DATA_PATH || path.resolve(__dirname, '../data/data.json');
+
+const lerDados = () => {
+    try {
+        const raw = fs.readFileSync(DATA_PATH, 'utf8');
+        return JSON.parse(raw);
+    } catch (error) {
+        console.error("Erro ao ler data.json:", error);
+        return {};
+    }
+};
+
+export const getOpcoes = (req, res) => res.json(lerDados());
+
+export const salvarDados = (req, res) => {
     try {
         fs.writeFileSync(DATA_PATH, JSON.stringify(req.body, null, 2));
         res.json({ success: true });
@@ -14,7 +28,7 @@ exports.salvarDados = (req, res) => {
     }
 };
 
-exports.calcular = (req, res) => {
+export const calcular = (req, res) => {
     const { adultos, criancas, selecionados } = req.body;
     const dados = lerDados();
     const resultados = [];
