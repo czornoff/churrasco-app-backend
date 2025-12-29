@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import Opcoes from '../models/Opcoes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,20 +18,29 @@ const lerDados = () => {
     }
 };
 
-export const getOpcoes = (req, res) => res.json(lerDados());
-
-export const salvarDados = (req, res) => {
+export const getOpcoes = async (req, res) => {
     try {
-        fs.writeFileSync(DATA_PATH, JSON.stringify(req.body, null, 2));
+        const dados = await Opcoes.findOne(); // Busca o único documento de opções
+        res.json(dados);
+    } catch (err) {
+        res.status(500).json({ error: "Erro ao buscar dados" });
+    }
+};
+
+export const salvarDados = async (req, res) => {
+    try {
+        // Atualiza o documento existente ou cria um novo (upsert)
+        await Opcoes.findOneAndUpdate({}, req.body, { upsert: true });
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ success: false });
     }
 };
 
-export const calcular = (req, res) => {
+export const calcular = async (req, res) => {
     const { adultos, criancas, selecionados } = req.body;
-    const dados = lerDados();
+    // const dados = lerDados();
+    const dados = await Opcoes.findOne();
     const resultados = [];
     const nAdultos = parseInt(adultos) || 0;
     const nCriancas = parseInt(criancas) || 0;
