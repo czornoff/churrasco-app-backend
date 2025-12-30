@@ -14,7 +14,6 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.error("Erro ao conectar ao Mongo:", err));
 
 const app = express();
-app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 // 1. CORS (Deve ser o primeiro)
@@ -35,18 +34,22 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.set('trust proxy', 1); 
 
-// 2. Configuração de Sessão
 app.use(session({
-    secret: 'e09962be-a862-4342-afb0-9b9723ef44aa',
+    secret: process.env.SESSION_SECRET || 'churrasco_secret_key',
     resave: false,
     saveUninitialized: false,
+    proxy: true, // Informa ao session que ele está atrás de um proxy (Render)
     cookie: {
-        secure: true,      // Obrigatorio em HTTPS (Render)
-        sameSite: 'none',  // Obrigatorio para dominios diferentes (Vercel -> Render)
+        // Em produção (Render), secure DEVE ser true. Em localhost, deve ser false.
+        secure: true, 
+        
+        // 'none' é o ÚNICO que permite o cookie funcionar entre Vercel e Render
+        sameSite: 'none', 
+        
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000 // 1 dia
     }
 }));
 
