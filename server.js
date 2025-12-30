@@ -18,9 +18,21 @@ app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 // 1. CORS (Deve ser o primeiro)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://churrasco-app-frontend.vercel.app'
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
+  origin: function (origin, callback) {
+    // Permite requisições sem origin (como ferramentas de teste)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS não permite esta origem'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
 }));
 
 app.use(express.json());
