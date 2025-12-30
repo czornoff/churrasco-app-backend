@@ -43,9 +43,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Mantenha false para localhost
+        secure: true,      // Obrigatorio em HTTPS (Render)
+        sameSite: 'none',  // Obrigatorio para dominios diferentes (Vercel -> Render)
         httpOnly: true,
-        sameSite: 'lax' // Necessário para cookies entre portas 3000 e 3001
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
