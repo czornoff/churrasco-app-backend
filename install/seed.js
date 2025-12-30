@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import Opcoes from './models/Opcoes.js'; // Verifique se o caminho está correto
+import Opcoes from '../models/Opcoes.js'; // Verifique se o caminho está correto
 
 dotenv.config();
 
