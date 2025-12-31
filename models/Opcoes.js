@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const OpcoesSchema = new mongoose.Schema({
   configuracoes: {
     gramasCarneAdulto: Number,
-    gramasCarneCrianca: Number
+    gramasOutrosAdulto: Number,
+    mlBebidaAdulto: Number
   },
   carnes: Array,
   bebidas: Array,
