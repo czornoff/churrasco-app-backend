@@ -32,7 +32,8 @@ app.use(cors({
       callback(new Error('CORS não permite esta origem'), false);
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
 
 // 2. Configuração de Sessão e Cookie Híbrida
