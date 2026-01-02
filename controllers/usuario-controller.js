@@ -1,4 +1,5 @@
 import Usuario from '../models/Usuario.js';
+import bcrypt from 'bcryptjs';
 
 /**
  * @description Busca todos os usuários do banco de dados.
@@ -89,7 +90,7 @@ export const excluirDados = async (req, res) => {
             return res.status(404).json({ message: "Usuário não encontrado." });
         }
 
-        res.json({ success: true, data: usuario, message: "Usuário removido com sucesso!" });
+        res.json({ success: true, message: "Usuário removido com sucesso!" });
     } catch (err) {
         console.error("Erro ao salvar no Banco:", err);
         res.status(500).json({ success: false, error: err.message });

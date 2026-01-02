@@ -1,5 +1,5 @@
-// models/Usuario.js
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const usuarioSchema = new mongoose.Schema({
     nome: String,
@@ -17,18 +17,25 @@ const usuarioSchema = new mongoose.Schema({
         default: 'active' 
     },
     avatar: String,
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-});
+}, { timestamps: true });
 
 // Hash da senha antes de salvar
-usuarioSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next();
+// REMOVEMOS o parâmetro 'next' e usamos apenas async/await
+usuarioSchema.pre('save', async function() {
+    // Importante: Não use Arrow Function aqui, pois precisamos do 'this'
+    if (!this.password || !this.isModified('password')) {
+        return; 
     }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    } catch (err) {
+        throw new Error(err); // No Next.js/Mongoose Moderno, lançar erro interrompe o save
+    }
 });
 
-export default mongoose.model('Usuario', usuarioSchema);
+// Correção de cache para Next.js
+const Usuario = mongoose.models.Usuario || mongoose.model('Usuario', usuarioSchema);
+
+export default Usuario;
