@@ -3,63 +3,87 @@ dotenv.config();
 
 import express from 'express';
 import passport from 'passport';
-import './config/passport.js'; 
 import cors from 'cors';
-import mongoose from 'mongoose';
 import session from 'express-session';
-import churrascoRoutes from './routes/churrasco-routes.js';
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("🍃 Conectado ao MongoDB Atlas"))
-    .catch(err => console.error("Erro ao conectar ao Mongo:", err));
+// Importações de configuração e rotas
+import connectDB from './config/database.js';
+import './config/passport.js'; 
+import authRoutes from './routes/auth-routes.js';
+import adminRoutes from './routes/admin-routes.js';
+import apiRoutes from './routes/api-routes.js';
 
+// --- Inicialização ---
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-// Identifica se o servidor está rodando no Render (produção) ou Local
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Conecta ao Banco de Dados
+connectDB();
 
 // 1. CORS Dinâmico
 const originsString = process.env.ALLOWED_ORIGINS || 'http://localhost:3000';
 const allowedOrigins = originsString.split(',');
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS não permite esta origem'), false);
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    origin: (origin, callback) => {
+        // Permite requisições sem 'origin' (ex: Postman, apps mobile)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+        } else {
+        callback(new Error('Origem não permitida pelo CORS'));
+        }
+    },
+    credentials: true,
 }));
 
-// 2. Configuração de Sessão e Cookie Híbrida
-app.set('trust proxy', 1); 
+// 2. Parser de JSON
+app.use(express.json());
 
+// 3. Configuração de Sessão
+// 'trust proxy' é necessário se o app estiver atrás de um proxy (Heroku, Render, etc)
+app.set('trust proxy', 1); 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'churrasco_secret_key',
     resave: false,
     saveUninitialized: false,
     proxy: true, 
     cookie: {
-        // Se for produção, usa configurações para Vercel/Render (HTTPS)
-        // Se for local, usa configurações simples para o navegador aceitar
         secure: isProduction, 
         sameSite: isProduction ? 'none' : 'lax', 
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 
+        maxAge: 24 * 60 * 60 * 1000 // 24 horas
     }
 }));
 
-app.use(express.json()); // Importante para ler corpo de requisições POST
+// 4. Inicialização do Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', churrascoRoutes);
 
+// --- Rotas ---
+app.use('/auth', authRoutes);
+app.use('/admin', adminRoutes);
+app.use('/api', apiRoutes);
+
+
+// --- Tratamento de Erros ---
+// Rota "catch-all" para 404
+app.use((req, res, next) => {
+    res.status(404).json({ message: 'Endpoint não encontrado.' });
+});
+
+// Manipulador de erro global
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Loga o erro no console
+    res.status(err.status || 500).json({ 
+        message: err.message || 'Ocorreu um erro interno no servidor.' 
+    });
+});
+
+
+// --- Iniciar Servidor ---
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT} (${isProduction ? 'PROD' : 'DEV'})`);
+    console.log(`🚀 Servidor rodando na porta ${PORT} (${isProduction ? 'PRODUÇÃO' : 'DESENVOLVIMENTO'})`);
 });

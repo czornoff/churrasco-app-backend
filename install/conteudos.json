@@ -1,0 +1,130 @@
+{
+    "dicas": {
+        "itens": [
+        {
+            "titulo": "O Ponto do Braseiro",
+            "texto": "O momento ideal é quando o carvão está coberto por uma fina camada de cinza branca (o braseiro). Evite labaredas que queimam a carne por fora e a deixam crua por dentro.",
+            "icone": "🔥"
+        },
+        {
+            "titulo": "Salgar na Hora Certa",
+            "texto": "Para cortes grossos, use sal grosso. Para cortes finos, prefira sal de parrilla. Salgue apenas alguns minutos antes de levar ao fogo para não desidratar a carne.",
+            "icone": "🧂"
+        },
+        {
+            "titulo": "O Descanso é Sagrado",
+            "texto": "Ao tirar a carne da grelha, espere de 2 a 5 minutos antes de fatiar. Isso permite que os sucos se redistribuam, garantindo uma carne muito mais suculenta.",
+            "icone": "⏳"
+        },
+        {
+            "titulo": "Contra a Fibra",
+            "texto": "Sempre identifique a direção das fibras da carne e corte no sentido transversal (oposto) a elas. Isso rompe as fibras e torna a mastigação muito mais macia.",
+            "icone": "🔪"
+        }
+        ],
+        "titulo": "Dicas de Mestre",
+        "subtitulo": "Segredos para elevar o nível do seu churrasco"
+    },
+    "email": "churrasco@zornoff.com.br",
+    "nomeApp": "Calculadora de Churrasco",
+    "produtos": {
+        "itens": [
+        {
+            "titulo": "Kit Churrasco Premium",
+            "texto": "Faca, garfo e pegador em aço inox com maleta.",
+            "icone": "🔥"
+        },
+        {
+            "titulo": "Tábua de Corte Artesanal",
+            "texto": "Madeira nobre tratada com óleo mineral.",
+            "icone": "🔥"
+        },
+        {
+            "titulo": "Carvão Vegetal 8kg",
+            "texto": "Eucalipto de alta densidade, maior duração.",
+            "icone": "🔥"
+        }
+        ],
+        "titulo": "Produtos Selecionados",
+        "subtitulo": "Os melhores itens para o seu evento"
+    },
+    "receitas": {
+        "itens": [
+        {
+            "titulo": "Picanha no Alho",
+            "texto": "🛒 Ingredientes:\n1 peça de Picanha\n5 dentes de alho amassados\nSal grosso\nAzeite\n👨‍🍳 Modo de Preparo:\nMisture o alho com azeite e passe na carne. Cubra com sal grosso e leve à grelha com a gordura para cima primeiro.",
+            "icone": "🍳",
+            "tempo": "40 min",
+            "ingredientes": [
+            "1 peça de Picanha",
+            "5 dentes de alho amassados",
+            "Sal grosso",
+            "Azeite"
+            ],
+            "preparo": "Misture o alho com azeite e passe na carne. Cubra com sal grosso e leve à grelha com a gordura para cima primeiro."
+        },
+        {
+            "titulo": "Maionese de Batata",
+            "texto": "🛒 Ingredientes:\n500g de batatas\n3 ovos cozidos\nMaionese a gosto\nCheiro verde\n👨‍🍳 Modo de Preparo:\nCozinhe as batatas em cubos. Misture com os ovos picados e a maionese. Finalize com cheiro verde.",
+            "icone": "🍳",
+            "tempo": "30 min",
+            "nivel": "Médio",
+            "ingredientes": [
+            "500g de batatas",
+            "3 ovos cozidos",
+            "Maionese a gosto",
+            "Cheiro verde"
+            ],
+            "preparo": "Cozinhe as batatas em cubos. Misture com os ovos picados e a maionese. Finalize com cheiro verde."
+        },
+        {
+            "titulo": "Pão de Alho Caseiro",
+            "texto": "🛒 Ingredientes:\nPão francês\nMaionese\nAlho\nQueijo parmesão\nOrégano\n👨‍🍳 Modo de Preparo:\nCorte os pães sem separar as fatias. Recheie com o creme de alho e queijo. Leve à churrasqueira até dourar.",
+            "icone": "🍳",
+            "tempo": "15 min",
+            "ingredientes": [
+            "Pão francês",
+            "Maionese",
+            "Alho",
+            "Queijo parmesão",
+            "Orégano"
+            ],
+            "preparo": "Corte os pães sem separar as fatias. Recheie com o creme de alho e queijo. Leve à churrasqueira até dourar."
+        }
+        ],
+        "titulo": "Receitas de Sucesso",
+        "subtitulo": "Acompanhamentos e preparos especiais"
+    },
+    "slogan": "A solução inteligente para organizar seu churrasco sem desperdícios.",
+    "updatedAt": {
+        "$date": "2026-01-01T17:38:32.059Z"
+    },
+    "utensilios": {
+        "itens": [
+        {
+            "titulo": "Faca do Chef",
+            "texto": "Para cortes precisos e fatiamento.",
+            "icone": "🍴"
+        },
+        {
+            "titulo": "Chaira (Afiador)",
+            "texto": "Manter o fio da faca durante o churrasco.",
+            "icone": "🍴"
+        },
+        {
+            "titulo": "Grelha Moeda",
+            "texto": "Ideal para cortes que precisam de marcação.",
+            "icone": "🍴"
+        },
+        {
+            "titulo": "Acendedor Elétrico",
+            "texto": "Praticidade para ligar o fogo sem esforço.",
+            "icone": "🍴"
+        }
+        ],
+        "titulo": "Utensílios Essenciais",
+        "subtitulo": "Equipamentos que todo churrasqueiro precisa"
+    },
+    "sobreTexto": "<p>A <strong>Calculadora de Churrasco</strong> nasceu da necessidade de transformar o planejamento de eventos em algo simples, preciso e sem desperd&iacute;cios. Sabemos que organizar um churrasco envolve muito mais do que apenas comprar carne; trata-se de garantir a melhor experi&ecirc;ncia para cada convidado, do consumo de bebidas ao c&aacute;lculo exato de acompanhamentos.</p>\n<h4>O Que Nos Torna Diferentes?</h4>\n<p>Diferente de calculadoras comuns, a <strong>Calculadora de Churrasco</strong> utiliza um algoritmo de Propor&ccedil;&atilde;o Inteligente:</p>\n<ul>\n<li><strong>Ajuste por Perfil</strong><br>Diferenciamos o consumo entre homens, mulheres e crian&ccedil;as, garantindo que ningu&eacute;m fique com fome e que n&atilde;o haja sobras excessivas.</li>\n<li><strong>Gest&atilde;o de Bebidas</strong><br>Nosso sistema calcula a cota de l&iacute;quidos baseada na prefer&ecirc;ncia por alco&oacute;licos ou n&atilde;o alco&oacute;licos, ajustando automaticamente os volumes totais.</li>\n<li><strong>Personaliza&ccedil;&atilde;o Total</strong><br>Atrav&eacute;s do nosso Painel Admin, as m&eacute;tricas podem ser calibradas para diferentes estilos de eventos, desde um churrasco r&aacute;pido at&eacute; uma celebra&ccedil;&atilde;o de dia inteiro.</li>\n<li><strong>Facilidade no Compartilhamento</strong><br>Com um clique, voc&ecirc; gera uma lista de compras detalhada e organizada, pronta para ser enviada via WhatsApp para os respons&aacute;veis pelas compras.</li>\n</ul>\n<h4>Nossa Miss&atilde;o</h4>\n<p>Nossa miss&atilde;o &eacute; ser o bra&ccedil;o direito do churrasqueiro. Queremos que voc&ecirc; gaste menos tempo com planilhas e c&aacute;lculos complexos e mais tempo aproveitando o braseiro com amigos e fam&iacute;lia.</p>\n<h3 style=\"text-align: center; font-style: italic;\">Churrasco &eacute; celebra&ccedil;&atilde;o. O planejamento a gente resolve para voc&ecirc;.</h3>",
+    "sobreTitulo": "Sobre a Calculadora de Churrasco"
+}

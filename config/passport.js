@@ -54,6 +54,6 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
 // Necessário para manter a sessão
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
-  const user = await Usuario.findById(id);
-  done(null, user);
+    const user = await Usuario.findById(id);
+    done(null, user);
 });

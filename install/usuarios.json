@@ -1,0 +1,8 @@
+{
+    "nome": "Admin Master",
+    "email": "admin@admin.com",
+    "password": "$2a$12$HZWJd0.Z/pxnW.CH7C1k4.HKiZTuhtvlH.YYQpFVotaj02EVDI8yW",
+    "role": "admin",
+    "status": "active",
+    "avatar": "https://ui-avatars.com/api/?name=Admin Master&background=random"
+}
