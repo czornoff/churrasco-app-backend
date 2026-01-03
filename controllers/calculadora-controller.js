@@ -1,4 +1,5 @@
 import Opcao from '../models/Opcao.js';
+import CalculoLog from '../models/CalculoLog.js';
 
 // --- CONSTANTES E CONFIGURAÇÕES ---
 
@@ -142,6 +143,7 @@ function processarUtensilios(utensiliosSelecionados, cotaCarneTotal, nTotalPesso
 export const calcular = async (req, res) => {
     try {
         const { homens, mulheres, criancas, selecionados, adultosQueBebem, horas } = req.body;
+        const usuarioId = req.user ? req.user.id : null;
         const dados = await Opcao.findOne();
         
         if (!dados) return res.status(404).json({ error: "Configurações não encontradas" });
@@ -187,6 +189,25 @@ export const calcular = async (req, res) => {
             ...resultadosOutros,
             ...resultadosUtensilios,
         ];
+
+        try {
+            await CalculoLog.create({
+                usuarioId: usuarioId, // Se null, salva sem usuário conforme pedido
+                participantes: {
+                    homens: nHomens,
+                    mulheres: nMulheres,
+                    criancas: nCriancas,
+                    adultosQueBebem: qtdeQueBebemAlcool
+                },
+                horasDuracao: parseInt(horas) || 4,
+                itensSelecionados: selecionados,
+                resultadoFinal: resultadosFinais,
+                dataConsulta: new Date() // Data e hora atual
+            });
+        } catch (logErr) {
+            console.error("Erro ao salvar log de consulta:", logErr);
+            // Não bloqueamos a resposta ao usuário se o log falhar
+        }
 
         res.json(resultadosFinais);
 

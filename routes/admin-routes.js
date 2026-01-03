@@ -4,6 +4,7 @@ import { eAdmin } from '../middlewares/auth.js';
 import * as opcaoController from '../controllers/opcao-controller.js';
 import * as conteudoController from '../controllers/conteudo-controller.js';
 import * as usuarioController from '../controllers/usuario-controller.js';
+import * as relatorioController from '../controllers/relatorio-controller.js';
 
 const router = express.Router();
 
@@ -15,5 +16,8 @@ router.post('/conteudo/salvar', eAdmin, conteudoController.salvarDados);
 router.post('/usuario/salvar', eAdmin, usuarioController.salvarDados); // Criar um novo usuário
 router.put('/usuario/salvar/:id', eAdmin, usuarioController.atualizarDados); // Atualizar usuário existente
 router.delete('/usuario/excluir/:id', eAdmin, usuarioController.excluirDados); // Excluir um usuário
+
+// --- Rotas de Gerenciamento de Relatorios ---
+router.get('/relatorio', eAdmin, relatorioController.buscarRelatorios);
 
 export default router;
