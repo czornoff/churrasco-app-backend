@@ -10,7 +10,7 @@ const EMOJIS = {
     'Linguiça': '🌭',
     'Outras': '🍖',
     'Acompanhamento': '🥗',
-    'Adicional': '🧂',
+    'Adicional': '🧀',
     'BebidaAlcoolica': '🍻',
     'BebidaNaoAlcoolica': '🥤',
     'Utensilio': '🍴'

@@ -1,4 +1,4 @@
-# Backend - Calculadora de Churrasco
+# Backend
 
 Este é o diretório do backend do seu projeto.
 

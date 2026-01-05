@@ -16,6 +16,15 @@ const usuarioSchema = new mongoose.Schema({
         enum: ['active', 'inactive', 'banned'], 
         default: 'active' 
     },
+    UF: String,
+    Cidade: String,
+    birthday: Date,
+    whatsApp: String,
+    genero: { 
+        type: String, 
+        enum: ['masculino', 'feminino', 'outros', 'undefined'], 
+        default: 'undefined' 
+    },
     avatar: String,
 }, { timestamps: true });
 

@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import passport from 'passport';
 import cors from 'cors';
 import session from 'express-session';
@@ -12,6 +14,9 @@ import './config/passport.js';
 import authRoutes from './routes/auth-routes.js';
 import adminRoutes from './routes/admin-routes.js';
 import apiRoutes from './routes/api-routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // --- Inicialização ---
 const app = express();
@@ -66,7 +71,7 @@ app.use(passport.session());
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
-
+app.use('/logos', express.static(path.join(__dirname, 'public/logos')));
 
 // --- Tratamento de Erros ---
 // Rota "catch-all" para 404

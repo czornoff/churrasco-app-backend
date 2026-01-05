@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
  */
 export const getDados = async (req, res) => {
     try {
-        const dados = await Usuario.find({}, 'nome email role status createdAt avatar');;
+        const dados = await Usuario.find({}, 'nome email role status createdAt avatar birthday whatsApp Cidade UF genero');;
         res.json(dados);
     } catch (err) {
         res.status(500).json({ error: "Erro ao buscar dados no banco" });
@@ -57,17 +57,38 @@ export const salvarDados = async (req, res) => {
  */
 export const atualizarDados = async (req, res) => {
     try {
-        const { role, status } = req.body;
+        const { nome, email, role, status, UF, Cidade, birthday, whatsApp, genero } = req.body;
+        const id = req.params.id;
+
+        // Se o usuário estiver tentando mudar o e-mail, verificamos se já existe
+        if (email) {
+            const emailEmUso = await Usuario.findOne({ email, _id: { $ne: id } });
+            if (emailEmUso) {
+                return res.status(400).json({ message: "Este e-mail já está sendo usado por outra conta." });
+            }
+        }
+
+        const dadosParaAtualizar = {};
+        if (nome) dadosParaAtualizar.nome = nome;
+        if (email) dadosParaAtualizar.email = email;
+        if (role) dadosParaAtualizar.role = role;
+        if (status) dadosParaAtualizar.status = status;
+        if (UF) dadosParaAtualizar.UF = UF;
+        if (Cidade) dadosParaAtualizar.Cidade = Cidade;
+        if (birthday) dadosParaAtualizar.birthday = birthday;
+        if (whatsApp) dadosParaAtualizar.whatsApp = whatsApp;
+        if (genero) dadosParaAtualizar.genero = genero;
+
         const usuario = await Usuario.findByIdAndUpdate(
-            req.params.id, 
-            { role, status }, 
-            { new: true }
+            id,
+            { $set: dadosParaAtualizar },
+            { new: true, runValidators: true }
         );
-        if (!usuario) 
-            return res.status(404).json({ message: "Usuário não encontrado." });
-        res.json({success: true, data: usuario, message: "Dados salvos com sucesso!"});
+
+        if (!usuario) return res.status(404).json({ message: "Usuário não encontrado." });
+
+        res.json({ success: true, data: usuario, message: "Perfil atualizado com sucesso!" });
     } catch (err) {
-        console.error("Erro ao salvar no Banco:", err);
         res.status(500).json({ success: false, error: err.message });
     }
 };
