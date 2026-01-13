@@ -43,8 +43,14 @@ const seed = async () => {
         const conteudosPath = path.join(__dirname, 'conteudos.json');
         if (fs.existsSync(conteudosPath)) {
             const conteudosData = JSON.parse(fs.readFileSync(conteudosPath, 'utf8'));
-            console.log("Inserindo novos conteúdos...");
-            await Conteudo.create(conteudosData);
+            // Tratando a data do objeto único
+            if (conteudosData.updatedAt && conteudosData.updatedAt.$date) {
+                conteudosData.updatedAt = conteudosData.updatedAt.$date;
+            }
+
+            console.log("Inserindo novo conteúdo único...");
+            // Usamos o objeto direto, sem o map
+            await Conteudo.create(conteudosData); 
             console.log("👍 Conteúdos importados com sucesso!");
         } else {
             console.log("⚠️ Arquivo conteudos.json não encontrado. Pulando etapa.");
