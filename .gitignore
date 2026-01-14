@@ -1,3 +1,7 @@
-/node_modules
+node_modules/
 .DS_Store
 .env
+
+public/logos/logo_1767558216926_logotipoZ.png
+public/logos/logo_1767558717768_logo.png
+public/logos/logo_1767565577906_teste.webp
