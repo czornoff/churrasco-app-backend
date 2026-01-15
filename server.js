@@ -90,5 +90,5 @@ app.use((err, req, res, next) => {
 
 // --- Iniciar Servidor ---
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT} (${isProduction ? 'PRODUÇÃO' : 'DESENVOLVIMENTO'})`);
+    
 });
