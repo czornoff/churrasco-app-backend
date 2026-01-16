@@ -4,6 +4,7 @@ import * as conteudoController from '../controllers/conteudo-controller.js';
 import * as calculadoraController from '../controllers/calculadora-controller.js';
 import * as usuarioController from '../controllers/usuario-controller.js';
 import * as relatorioController from '../controllers/relatorio-controller.js';
+import * as estimativaController from '../controllers/estimativa-controller.js';
 
 const router = express.Router();
 
@@ -23,5 +24,8 @@ router.post('/calcular', calculadoraController.calcular);
 
 // Rota para buscar os relatórios dos usuarios
 router.get('/relatorio/:id', relatorioController.buscarRelatoriosUsuarios);
+
+// Rota para estimativa de custos com IA
+router.post('/estimativa-ia', estimativaController.gerarEstimativa);
 
 export default router;
