@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 const ConteudoSchema = new mongoose.Schema({
     nomeApp: { type: String, default: 'Calculadora de Churrasco' },
+    email: { type: String, default: 'contato@email.com' },
+    instagram: { type: String, default: 'https://instagram.com/' },
     slogan: String,
     email: String,
     logoUrl: String,
