@@ -4,8 +4,6 @@ const ConteudoSchema = new mongoose.Schema({
     nomeApp: { type: String, default: 'Calculadora de Churrasco' },
     email: { type: String, default: 'contato@email.com' },
     instagram: { type: String, default: 'https://instagram.com/' },
-    slogan: String,
-    email: String,
     logoUrl: String,
     primary: { type: String, default: '#e53935' },
     secondary: { type: String, default: '#333333' },
@@ -23,7 +21,8 @@ const ConteudoSchema = new mongoose.Schema({
     dicas: { titulo: String, subtitulo: String, itens: Array },
     produtos: { titulo: String, subtitulo: String, itens: Array },
     receitas: { titulo: String, subtitulo: String, itens: Array },
-    utensilios: { titulo: String, subtitulo: String, itens: Array }
+    utensilios: { titulo: String, subtitulo: String, itens: Array },
+    ondeComprar: { botoes: [{ id: String, label: String, cor: String, icone: String, pinUrl: String, termo: String, ativo: Boolean }] }
 }, { timestamps: true });
 
 export default mongoose.model('Conteudo', ConteudoSchema);
