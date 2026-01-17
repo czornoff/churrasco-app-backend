@@ -26,4 +26,7 @@ router.get('/logout', authController.logout);
 // Rota de login manual
 router.post('/login-manual', authController.loginManual);
 
+// Rota de registro manual
+router.post('/register', authController.register);
+
 export default router;

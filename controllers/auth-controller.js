@@ -1,4 +1,31 @@
 import passport from 'passport';
+import Usuario from '../models/Usuario.js';
+
+export const register = async (req, res, next) => {
+    try {
+        const { nome, email, password } = req.body;
+        const emailLower = email.toLowerCase().trim();
+
+        const existe = await Usuario.findOne({ email: emailLower });
+        if (existe) return res.status(400).json({ message: "E-mail já cadastrado." });
+
+        const novoUsuario = new Usuario({
+            nome,
+            email: emailLower,
+            password: password
+        });
+
+        await novoUsuario.save();
+
+        // Faz login automático após registrar
+        req.logIn(novoUsuario, (err) => {
+            if (err) return next(err);
+            return res.status(201).json(novoUsuario);
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Erro ao registrar usuário." });
+    }
+};
 
 /**
  * @description Callback após a autenticação do Google. Redireciona para o frontend.
