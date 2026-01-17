@@ -14,7 +14,7 @@ export const gerarEstimativa = async (req, res) => {
             model: "gemini-2.5-flash",
         });
 
-        const prompt = `Atue como um especialista em churrasco. Com base nestes itens: ${JSON.stringify(itens)}, gere uma estimativa de custo em Reais. Retorne um JSON com separação das carnes, bovina, suína, frango, linguiça, bebidas (alcoólicas e não alcoólicas), adicionais, acompanhamentos e utensílios. O JSON deve ter o seguinte formato: { "grupos": [{"nome": string, "valor": number}], "total": number, "observacao": string }`;
+        const prompt = `Atue como um especialista em churrasco. Com base nestes itens: ${JSON.stringify(itens)}, gere uma estimativa de custo em Reais. Retorne um JSON com separação entre as carnes, bovina, suína, frango, linguiça, bebidas (alcoólicas e não alcoólicas), adicionais, acompanhamentos e utensílios. O JSON deve ter o seguinte formato, trazendo somente os itens e as categorias que foram previamente selecionados, opções e outros dados devem estar no campo observacao: { "grupos": [{"nome": string, "valor": number}], "total": number, "observacao": string }`;
 
         // 3. Executa a geração
         const result = await model.generateContent(prompt);
