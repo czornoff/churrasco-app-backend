@@ -9,10 +9,14 @@ export const register = async (req, res, next) => {
         const existe = await Usuario.findOne({ email: emailLower });
         if (existe) return res.status(400).json({ message: "E-mail já cadastrado." });
 
+        const nomeParaAvatar = nome.split(' ').join('+');
+        const avatarDinamico = `https://ui-avatars.com/api/?name=${nomeParaAvatar}&background=random`;
+
         const novoUsuario = new Usuario({
             nome,
             email: emailLower,
-            password: password
+            password: password,
+            avatar: avatarDinamico
         });
 
         await novoUsuario.save();
