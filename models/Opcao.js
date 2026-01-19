@@ -10,7 +10,8 @@ const OpcaoSchema = new mongoose.Schema({
     bebidas: Array,
     acompanhamentos: Array,
     adicionais: Array,
-    utensilios: Array
+    utensilios: Array,
+    sobremesas: Array
 }, { collection: 'opcoes' });
 
 export default mongoose.model('Opcao', OpcaoSchema);

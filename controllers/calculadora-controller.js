@@ -13,7 +13,8 @@ const EMOJIS = {
     'Adicional': '🧀',
     'BebidaAlcoolica': '🍻',
     'BebidaNaoAlcoolica': '🥤',
-    'Utensilio': '🍴'
+    'Utensilio': '🍴',
+    'Sobremesa': '🍰'
 };
 
 const PROPORCOES = {
@@ -112,15 +113,14 @@ function processarOutros(outrosSelecionados, cotaOutrosTotal, acompanhamentos) {
         const desc = (unit === 'g' && pesoItem >= 1000)
             ? `${(pesoItem / 1000).toFixed(2)}kg`
             : `${Math.ceil(pesoItem)}${unit}`;
-            
-        return { nome: `${emoji} ${item.nome}`, quantidade: desc, tipo: 'comida' };
+        return { nome: `${emoji} ${item.nome}`, quantidade: desc, tipo: 'acompanhamentos' };
     });
 }
 
 /**
  * Calcula a quantidade de utensílios necessários.
  */
-function processarUtensilios(utensiliosSelecionados, cotaCarneTotal, nTotalPessoas) {
+function processarUtensilios(utensiliosSelecionados, cotaCarneTotal, nTotalPessoas, fatorTempo) {
     if (!utensiliosSelecionados || utensiliosSelecionados.length === 0) return [];
 
     return utensiliosSelecionados.map(u => {
@@ -129,10 +129,29 @@ function processarUtensilios(utensiliosSelecionados, cotaCarneTotal, nTotalPesso
         else if (u.base === 'pessoa') qtd = Math.ceil(nTotalPessoas * u.fator);
         else qtd = u.fator;
 
+        qtd *= fatorTempo;
+
         return { nome: `${EMOJIS.Utensilio} ${u.nome}`, quantidade: `${qtd} ${u.unidade || 'un'}`, tipo: 'outros' };
     });
 }
 
+function processarSobremesas(sobremesasSelecionadas, nHomens, nMulheres, nCriancas) {
+        if (!sobremesasSelecionadas || sobremesasSelecionadas.length === 0) return [];
+
+        return sobremesasSelecionadas.map(item => {
+            const gramasBase = item.gramasPorAdulto || 100;
+            // Aplica a proporção de consumo (Mulher 75%, Criança 45%)
+            const totalGramas = ((nHomens * gramasBase) + 
+                                (nMulheres * gramasBase ) + 
+                                (nCriancas * gramasBase ));
+
+            return {
+                nome: `${EMOJIS.Sobremesa} ${item.nome}`,
+                quantidade: totalGramas >= 1000 ? `${(totalGramas / 1000).toFixed(2)}kg` : `${Math.ceil(totalGramas)}g`,
+                tipo: 'sobremesas'
+            };
+        });
+    }
 
 // --- CONTROLLER PRINCIPAL ---
 
@@ -176,17 +195,20 @@ export const calcular = async (req, res) => {
         const bebidasSel = dados.bebidas.filter(b => selecionados.includes(b.id));
         const outrosSel = [...dados.acompanhamentos, ...dados.adicionais].filter(i => selecionados.includes(i.id));
         const utensiliosSel = dados.utensilios.filter(u => selecionados.includes(u.id));
+        const sobremesasSel = (dados.sobremesas || []).filter(s => selecionados.includes(s.id));
 
         // 4. Processamento e Geração de Resultados
         const resultadosCarnes = processarCarnes(carnesSel, cotaCarneTotal);
         const resultadosBebidas = processarBebidas(bebidasSel, { cotaAlcoolTotalML, cotaNaoAlcoolTotalML }, { qtdeQueBebemAlcool });
         const resultadosOutros = processarOutros(outrosSel, cotaOutrosTotal, dados.acompanhamentos);
-        const resultadosUtensilios = processarUtensilios(utensiliosSel, cotaCarneTotal, nTotalPessoas);
+        const resultadosUtensilios = processarUtensilios(utensiliosSel, cotaCarneTotal, nTotalPessoas, fatorTempo);
+        const resultadosSobremesas = processarSobremesas(sobremesasSel, nHomens, nMulheres, nCriancas);
         
         const resultadosFinais = [
             ...resultadosCarnes,
             ...resultadosBebidas,
             ...resultadosOutros,
+            ...resultadosSobremesas,
             ...resultadosUtensilios,
         ];
 
