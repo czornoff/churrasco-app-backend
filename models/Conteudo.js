@@ -4,6 +4,7 @@ const ConteudoSchema = new mongoose.Schema({
     nomeApp: { type: String, default: 'Calculadora de Churrasco' },
     email: { type: String, default: 'contato@email.com' },
     instagram: { type: String, default: 'https://instagram.com/' },
+    limiteConsulta: { type: Number, default: 5 },
     logoUrl: String,
     primary: { type: String, default: '#e53935' },
     secondary: { type: String, default: '#333333' },

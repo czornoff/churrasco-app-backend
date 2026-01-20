@@ -1,4 +1,5 @@
 import Usuario from '../models/Usuario.js';
+import Conteudo from '../models/Conteudo.js';
 import RegistroIP from '../models/RegistroIP.js';
 import bcrypt from 'bcryptjs';
 
@@ -140,6 +141,8 @@ export const removerBloqueioIP = async (req, res) => {
 
 export const verificarAcessoConteudo = async (req, res) => {
     const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const conf = await Conteudo.find({}, 'limiteConsulta');
+    const limite = conf[0].limiteConsulta;
 
     // Se o usuário estiver logado (via cookie/session), libera direto
     if (req.isAuthenticated && req.isAuthenticated()) {
@@ -149,7 +152,7 @@ export const verificarAcessoConteudo = async (req, res) => {
     try {
         const registro = await RegistroIP.findOne({ ip: userIP });
 
-        if (registro && registro.consultas >= 5) {
+        if (registro && registro.consultas >= limite) {
             return res.status(403).json({ 
                 liberado: false, 
                 limiteAtingido: true, 
@@ -170,5 +173,15 @@ export const verificarAcessoConteudo = async (req, res) => {
         res.json({ liberado: true });
     } catch (error) {
         res.status(500).json({ message: "Erro ao validar acesso." });
+    }
+};
+
+export const getLimiteIP = async (req, res) => {
+    const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    try {
+        const registro = await RegistroIP.findOne({ ip: userIP });
+        res.json({ consultas: registro ? registro.consultas : 0 });
+    } catch (error) {
+        res.status(500).json({ message: "Erro" });
     }
 };

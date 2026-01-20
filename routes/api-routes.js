@@ -32,4 +32,6 @@ router.post('/estimativa-ia', estimativaController.gerarEstimativa);
 
 router.post('/verificar-acesso', usuarioController.verificarAcessoConteudo);
 
+router.get('/verificar-limite-ip', usuarioController.getLimiteIP);
+
 export default router;

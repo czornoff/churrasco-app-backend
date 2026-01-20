@@ -1,4 +1,5 @@
 import RegistroIP from '../models/RegistroIP.js';
+import Conteudo from '../models/Conteudo.js';
 
 export const verificarLimiteVisitante = async (req, res, next) => {
     try {
@@ -18,11 +19,15 @@ export const verificarLimiteVisitante = async (req, res, next) => {
         );
 
         // 4. Verifica se já atingiu o limite
-        if (registro.consultas >= 5) {
+        const conf = await Conteudo.find({}, 'limiteConsulta');
+        const limite = conf[0].limiteConsulta;
+        let mensagem = `Limite de ${limite} consultas para visitantes atingido. Identificamos seu IP.`;
+        
+        if (registro.consultas >= limite) {
             return res.status(403).json({
                 success: false,
                 limiteAtingido: true,
-                message: "Limite de 5 consultas para visitantes atingido. Identificamos seu IP."
+                message: mensagem
             });
         }
 
