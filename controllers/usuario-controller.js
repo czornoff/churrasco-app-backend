@@ -1,4 +1,5 @@
 import Usuario from '../models/Usuario.js';
+import RegistroIP from '../models/RegistroIP.js';
 import bcrypt from 'bcryptjs';
 
 /**
@@ -115,5 +116,59 @@ export const excluirDados = async (req, res) => {
     } catch (err) {
         console.error("Erro ao salvar no Banco:", err);
         res.status(500).json({ success: false, error: err.message });
+    }
+};
+
+export const getIpsBloqueados = async (req, res) => {
+    try {
+        const ips = await RegistroIP.find().sort({ createdAt: -1 });
+        res.json(ips);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao buscar IPs" });
+    }
+};
+
+// Remove o bloqueio (deleta o registro do banco)
+export const removerBloqueioIP = async (req, res) => {
+    try {
+        await RegistroIP.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: "Bloqueio removido com sucesso!" });
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao remover bloqueio" });
+    }
+};
+
+export const verificarAcessoConteudo = async (req, res) => {
+    const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+    // Se o usuário estiver logado (via cookie/session), libera direto
+    if (req.isAuthenticated && req.isAuthenticated()) {
+        return res.json({ liberado: true });
+    }
+
+    try {
+        const registro = await RegistroIP.findOne({ ip: userIP });
+
+        if (registro && registro.consultas >= 5) {
+            return res.status(403).json({ 
+                liberado: false, 
+                limiteAtingido: true, 
+                message: "Limite de visualizações atingido." 
+            });
+        }
+
+        // Incrementa o contador do IP pois ele está "gastando" um acesso
+        await RegistroIP.findOneAndUpdate(
+            { ip: userIP },
+            { 
+                $inc: { consultas: 1 },
+                $set: { createdAt: new Date() } // Renova as 24h
+            },
+            { upsert: true }
+        );
+
+        res.json({ liberado: true });
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao validar acesso." });
     }
 };

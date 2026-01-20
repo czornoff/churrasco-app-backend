@@ -71,4 +71,7 @@ router.get('/listar-logos', eAdmin, (req, res) => {
     });
 });
 
+router.get('/ips', eAdmin, usuarioController.getIpsBloqueados);
+router.delete('/ips/:id', eAdmin, usuarioController.removerBloqueioIP);
+
 export default router;

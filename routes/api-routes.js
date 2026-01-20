@@ -6,6 +6,8 @@ import * as usuarioController from '../controllers/usuario-controller.js';
 import * as relatorioController from '../controllers/relatorio-controller.js';
 import * as estimativaController from '../controllers/estimativa-controller.js';
 
+import { verificarLimiteVisitante } from '../middlewares/authLimit.js';
+
 const router = express.Router();
 
 // --- Rotas Públicas da API ---
@@ -20,12 +22,14 @@ router.get('/conteudo', conteudoController.getDados);
 router.get('/usuario', usuarioController.getDados);
 
 // Rota principal da calculadora
-router.post('/calcular', calculadoraController.calcular);
+router.post('/calcular', verificarLimiteVisitante, calculadoraController.calcular);
 
 // Rota para buscar os relatórios dos usuarios
 router.get('/relatorio/:id', relatorioController.buscarRelatoriosUsuarios);
 
 // Rota para estimativa de custos com IA
 router.post('/estimativa-ia', estimativaController.gerarEstimativa);
+
+router.post('/verificar-acesso', usuarioController.verificarAcessoConteudo);
 
 export default router;
