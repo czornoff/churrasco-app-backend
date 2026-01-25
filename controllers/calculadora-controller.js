@@ -32,14 +32,62 @@ function processarCarnes(carnesSelecionadas, cotaCarneTotal) {
 
     const somaPesosRelativos = carnesSelecionadas.reduce((acc, c) => acc + (c.pesoRelativo || 10), 0);
     
-    return carnesSelecionadas.map(item => {
-        const pesoItem = cotaCarneTotal * (item.pesoRelativo / somaPesosRelativos);
+    // 1. Calcula o peso real de cada item primeiro
+    const itensCalculados = carnesSelecionadas.map(item => {
+        const pesoItem = cotaCarneTotal * ((item.pesoRelativo || 10) / somaPesosRelativos);
         return {
-            nome: `${EMOJIS[item.subcategoria] || EMOJIS['Bovina']} ${item.nome}`,
-            quantidade: pesoItem >= 1000 ? `${(pesoItem / 1000).toFixed(2)}kg` : `${Math.ceil(pesoItem)}g`,
-            tipo: 'comida'
+            ...item,
+            pesoReal: pesoItem
         };
     });
+
+    // 2. Agrupa por subcategoria para calcular subtotais
+    const agrupado = itensCalculados.reduce((acc, item) => {
+        const sub = item.subcategoria || 'Outras';
+        if (!acc[sub]) acc[sub] = { itens: [], totalSub: 0 };
+        acc[sub].itens.push(item);
+        acc[sub].totalSub += item.pesoReal;
+        return acc;
+    }, {});
+
+    const resultados = [];
+    let totalGeralCarnes = 0;
+
+    // 3. Monta o array final com os itens e os subtotais intercalados
+    Object.keys(agrupado).forEach(sub => {
+        const dadosSub = agrupado[sub];
+        totalGeralCarnes += dadosSub.totalSub;
+
+        // Adiciona os itens da subcategoria
+        dadosSub.itens.forEach(item => {
+            resultados.push({
+                nome: `${EMOJIS[item.subcategoria] || EMOJIS['Bovina']} ${item.nome}`,
+                quantidade: item.pesoReal >= 1000 ? `${(item.pesoReal / 1000).toFixed(2)}kg` : `${Math.ceil(item.pesoReal)}g`,
+                tipo: 'comida',
+                subcategoria: sub
+            });
+        });
+
+        // Adiciona a linha de Subtotal da Subcategoria (ex: Subtotal Bovina)
+        resultados.push({
+            nome: `Subtotal ${sub}`,
+            quantidade: dadosSub.totalSub >= 1000 ? `${(dadosSub.totalSub / 1000).toFixed(2)}kg` : `${Math.ceil(dadosSub.totalSub)}g`,
+            tipo: 'comida',
+            subtipo: 'subtotal', // Para você estilizar diferente no front se quiser
+            isBold: true
+        });
+    });
+
+    // 4. Adiciona o Total Geral de Carnes no final da seção
+    resultados.push({
+        nome: `TOTAL GERAL DE CARNES`,
+        quantidade: totalGeralCarnes >= 1000 ? `${(totalGeralCarnes / 1000).toFixed(2)}kg` : `${Math.ceil(totalGeralCarnes)}g`,
+        tipo: 'comida',
+        subtipo: 'total_secao',
+        isBold: true
+    });
+
+    return resultados;
 }
 
 /**
@@ -50,71 +98,90 @@ function processarBebidas(bebidasSelecionadas, cotas, participantes) {
     
     const { cotaAlcoolTotalML, cotaNaoAlcoolTotalML } = cotas;
     const { qtdeQueBebemAlcool } = participantes;
-
     const resultados = [];
-    const alcoolicasSel = bebidasSelecionadas.filter(b => b.subcategoria === 'Alcoólica');
+
+    // Não Alcoólicas
     const naoAlcoolicasSel = bebidasSelecionadas.filter(b => b.subcategoria !== 'Alcoólica');
-
-    // Processa bebidas não alcoólicas
-    if (naoAlcoolicasSel.length > 0 && cotaNaoAlcoolTotalML > 0) {
+    if (naoAlcoolicasSel.length > 0) {
         const somaMls = naoAlcoolicasSel.reduce((acc, b) => acc + (b.mlPorAdulto || 600), 0);
-        const itensNaoAlcoolicos = naoAlcoolicasSel.map(item => {
-            const proporcao = (item.mlPorAdulto || 600) / somaMls;
-            const mlTotalItem = cotaNaoAlcoolTotalML * proporcao;
+        naoAlcoolicasSel.forEach(item => {
+            const mlTotalItem = cotaNaoAlcoolTotalML * ((item.mlPorAdulto || 600) / somaMls);
             const unidades = Math.ceil(mlTotalItem / (item.embalagem || 350));
-            return unidades > 0 ? { nome: `${EMOJIS.BebidaNaoAlcoolica} ${item.nome}`, quantidade: `${unidades} un`, tipo: 'bebida' } : null;
-        }).filter(Boolean);
-
-        if (itensNaoAlcoolicos.length > 0) {
-            resultados.push({ 
-                nome: 'Consumo total estimado de bebida NÃO alcoólica', 
-                quantidade: `${(cotaNaoAlcoolTotalML / 1000).toFixed(2)} litros`, 
-                tipo: 'bebida', subtipo: 'observacao'
-            }, ...itensNaoAlcoolicos);
-        }
+            resultados.push({ nome: `${EMOJIS.BebidaNaoAlcoolica} ${item.nome}`, quantidade: `${unidades} un`, tipo: 'bebida' });
+        });
+        resultados.push({
+            nome: "TOTAL BEBIDAS NÃO ALCOÓLICAS",
+            quantidade: `${(cotaNaoAlcoolTotalML / 1000).toFixed(2)}L`,
+            tipo: 'bebida', subtipo: 'total_secao', isBold: true
+        });
     }
 
-    // Processa bebidas alcoólicas
-    if (alcoolicasSel.length > 0 && cotaAlcoolTotalML > 0 && qtdeQueBebemAlcool > 0) {
+    // Alcoólicas
+    const alcoolicasSel = bebidasSelecionadas.filter(b => b.subcategoria === 'Alcoólica');
+    if (alcoolicasSel.length > 0 && qtdeQueBebemAlcool > 0) {
         const somaMls = alcoolicasSel.reduce((acc, b) => acc + (b.mlPorAdulto || 600), 0);
-        const itensAlcoolicos = alcoolicasSel.map(item => {
-            const proporcao = (item.mlPorAdulto || 600) / somaMls;
-            const mlTotalItem = cotaAlcoolTotalML * proporcao;
+        alcoolicasSel.forEach(item => {
+            const mlTotalItem = cotaAlcoolTotalML * ((item.mlPorAdulto || 600) / somaMls);
             const unidades = Math.ceil(mlTotalItem / (item.embalagem || 350));
-            return unidades > 0 ? { nome: `${EMOJIS.BebidaAlcoolica} ${item.nome}`, quantidade: `${unidades} un`, tipo: 'bebida' } : null;
-        }).filter(Boolean);
-
-        if (itensAlcoolicos.length > 0) {
-            resultados.push({ 
-                nome: 'Consumo total estimado de bebida alcoólica', 
-                quantidade: `${(cotaAlcoolTotalML / 1000).toFixed(2)} litros`, 
-                tipo: 'bebida', subtipo: 'observacao'
-            }, ...itensAlcoolicos);
-        }
+            resultados.push({ nome: `${EMOJIS.BebidaAlcoolica} ${item.nome}`, quantidade: `${unidades} un`, tipo: 'bebida' });
+        });
+        resultados.push({
+            nome: "TOTAL BEBIDAS ALCOÓLICAS",
+            quantidade: `${(cotaAlcoolTotalML / 1000).toFixed(2)}L`,
+            tipo: 'bebida', subtipo: 'total_secao', isBold: true
+        });
     }
     
     return resultados;
 }
 
-/**
- * Calcula a quantidade de acompanhamentos e adicionais.
- */
 function processarOutros(outrosSelecionados, cotaOutrosTotal, acompanhamentos) {
     if (!outrosSelecionados || outrosSelecionados.length === 0) return [];
     
     const somaPesos = outrosSelecionados.reduce((acc, i) => acc + (i.gramasPorAdulto ?? i.qtdPorAdulto ?? 10), 0);
+    let totalGeral = 0;
 
-    return outrosSelecionados.map(item => {
-        const pesoConfig = (item.gramasPorAdulto ?? item.qtdPorAdulto ?? 10);
-        const pesoItem = cotaOutrosTotal * (pesoConfig / somaPesos);
+    const itens = outrosSelecionados.map(item => {
+        const pesoItem = cotaOutrosTotal * ((item.gramasPorAdulto ?? item.qtdPorAdulto ?? 10) / somaPesos);
+        totalGeral += pesoItem;
         const unit = item.unidade || 'g';
         const emoji = acompanhamentos.some(a => a.id === item.id) ? EMOJIS.Acompanhamento : EMOJIS.Adicional;
-
-        const desc = (unit === 'g' && pesoItem >= 1000)
-            ? `${(pesoItem / 1000).toFixed(2)}kg`
-            : `${Math.ceil(pesoItem)}${unit}`;
+        const desc = (unit === 'g' && pesoItem >= 1000) ? `${(pesoItem / 1000).toFixed(2)}kg` : `${Math.ceil(pesoItem)}${unit}`;
+        
         return { nome: `${emoji} ${item.nome}`, quantidade: desc, tipo: 'acompanhamentos' };
     });
+
+    itens.push({
+        nome: "TOTAL ACOMPANHAMENTOS/ADICIONAIS",
+        quantidade: totalGeral >= 1000 ? `${(totalGeral / 1000).toFixed(2)}kg` : `${Math.ceil(totalGeral)}g`,
+        tipo: 'acompanhamentos', subtipo: 'total_secao', isBold: true
+    });
+
+    return itens;
+}
+
+function processarSobremesas(sobremesasSelecionadas, nHomens, nMulheres, nCriancas) {
+    if (!sobremesasSelecionadas || sobremesasSelecionadas.length === 0) return [];
+    let totalGeral = 0;
+
+    const itens = sobremesasSelecionadas.map(item => {
+        const gramasBase = item.gramasPorAdulto || 100;
+        const totalGramas = (nHomens + nMulheres + nCriancas) * gramasBase;
+        totalGeral += totalGramas;
+        return {
+            nome: `${EMOJIS.Sobremesa} ${item.nome}`,
+            quantidade: totalGramas >= 1000 ? `${(totalGramas / 1000).toFixed(2)}kg` : `${Math.ceil(totalGramas)}g`,
+            tipo: 'sobremesas'
+        };
+    });
+
+    itens.push({
+        nome: "TOTAL SOBREMESAS",
+        quantidade: totalGeral >= 1000 ? `${(totalGeral / 1000).toFixed(2)}kg` : `${Math.ceil(totalGeral)}g`,
+        tipo: 'sobremesas', subtipo: 'total_secao', isBold: true
+    });
+
+    return itens;
 }
 
 /**
@@ -131,29 +198,11 @@ function processarUtensilios(utensiliosSelecionados, cotaCarneTotal, nTotalPesso
 
         qtd *= fatorTempo;
 
+        if (u.unidade === 'kg') qtd = Math.ceil(qtd).toFixed(0);
+
         return { nome: `${EMOJIS.Utensilio} ${u.nome}`, quantidade: `${qtd} ${u.unidade || 'un'}`, tipo: 'outros' };
     });
 }
-
-function processarSobremesas(sobremesasSelecionadas, nHomens, nMulheres, nCriancas) {
-        if (!sobremesasSelecionadas || sobremesasSelecionadas.length === 0) return [];
-
-        return sobremesasSelecionadas.map(item => {
-            const gramasBase = item.gramasPorAdulto || 100;
-            // Aplica a proporção de consumo (Mulher 75%, Criança 45%)
-            const totalGramas = ((nHomens * gramasBase) + 
-                                (nMulheres * gramasBase ) + 
-                                (nCriancas * gramasBase ));
-
-            return {
-                nome: `${EMOJIS.Sobremesa} ${item.nome}`,
-                quantidade: totalGramas >= 1000 ? `${(totalGramas / 1000).toFixed(2)}kg` : `${Math.ceil(totalGramas)}g`,
-                tipo: 'sobremesas'
-            };
-        });
-    }
-
-// --- CONTROLLER PRINCIPAL ---
 
 /**
  * @description Orquestra o cálculo completo do churrasco.
